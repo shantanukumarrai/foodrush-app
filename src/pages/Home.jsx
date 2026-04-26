@@ -2,31 +2,31 @@ import { useState, useEffect } from 'react'
 import FoodCard from '../components/FoodCard'
 import { categories } from '../data/foods'
 
+// Food data directly yahan
+const foodData = [
+  { id: 1, name: "Butter Chicken", category: "Indian", price: 280, rating: 4.5, veg: false, time: "30 min", img: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&q=80", desc: "Creamy tomato-based curry with tender chicken" },
+  { id: 2, name: "Paneer Tikka", category: "Indian", price: 220, rating: 4.3, veg: true, time: "25 min", img: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400&q=80", desc: "Smoky grilled cottage cheese with spices" },
+  { id: 3, name: "Margherita Pizza", category: "Pizza", price: 320, rating: 4.6, veg: true, time: "35 min", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80", desc: "Classic pizza with fresh mozzarella and basil" },
+  { id: 4, name: "Chicken Burger", category: "Burgers", price: 180, rating: 4.2, veg: false, time: "20 min", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80", desc: "Juicy grilled chicken with crispy lettuce" },
+  { id: 5, name: "Veg Biryani", category: "Indian", price: 200, rating: 4.4, veg: true, time: "40 min", img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&q=80", desc: "Fragrant basmati rice with mixed vegetables" },
+  { id: 6, name: "Pasta Arrabiata", category: "Italian", price: 250, rating: 4.1, veg: true, time: "25 min", img: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&q=80", desc: "Spicy tomato pasta with garlic and herbs" },
+  { id: 7, name: "Chicken Shawarma", category: "Wraps", price: 160, rating: 4.5, veg: false, time: "15 min", img: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&q=80", desc: "Middle eastern wrap with chicken and garlic sauce" },
+  { id: 8, name: "Masala Dosa", category: "South Indian", price: 120, rating: 4.7, veg: true, time: "20 min", img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&q=80", desc: "Crispy rice crepe with spiced potato filling" },
+  { id: 9, name: "Pepperoni Pizza", category: "Pizza", price: 380, rating: 4.5, veg: false, time: "35 min", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&q=80", desc: "Classic pizza loaded with pepperoni slices" },
+  { id: 10, name: "Veg Burger", category: "Burgers", price: 150, rating: 4.0, veg: true, time: "20 min", img: "https://images.unsplash.com/photo-1550317138-10000687a72b?w=400&q=80", desc: "Crispy veggie patty with fresh veggies" },
+  { id: 11, name: "Chole Bhature", category: "Indian", price: 140, rating: 4.6, veg: true, time: "30 min", img: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80", desc: "Spicy chickpeas with fluffy fried bread" },
+  { id: 12, name: "Chocolate Shake", category: "Drinks", price: 110, rating: 4.8, veg: true, time: "10 min", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80", desc: "Thick creamy chocolate milkshake" }
+]
+
 const Home = () => {
-  const [foods, setFoods] = useState([])
-  const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
   const [search, setSearch] = useState('')
 
-  useEffect(() => {
-    fetch('http://localhost:5000/foods')
-      .then(res => res.json())
-      .then(data => { setFoods(data); setLoading(false) })
-      .catch(() => setLoading(false))
-  }, [])
-
-  const filtered = foods.filter(f => {
+  const filtered = foodData.filter(f => {
     const matchCat = activeCategory === 'All' || f.category === activeCategory
     const matchSearch = f.name.toLowerCase().includes(search.toLowerCase())
     return matchCat && matchSearch
   })
-
-  if (loading) return (
-    <div className="text-center py-5 mt-5">
-      <div className="spinner-border" style={{color:'#ff6b35'}}></div>
-      <p className="mt-3 text-muted">Loading delicious food...</p>
-    </div>
-  )
 
   return (
     <>
@@ -44,31 +44,21 @@ const Home = () => {
       <div className="container my-5">
         <div className="d-flex flex-wrap gap-2 mb-4">
           {categories.map(cat => (
-            <button key={cat}
-              onClick={() => setActiveCategory(cat)}
+            <button key={cat} onClick={() => setActiveCategory(cat)}
               style={{borderRadius:'50px',padding:'8px 22px',fontWeight:'500',cursor:'pointer',
                 background: activeCategory === cat ? '#ff6b35' : 'white',
                 color: activeCategory === cat ? 'white' : '#555',
-                border: activeCategory === cat ? '2px solid #ff6b35' : '2px solid #ddd',
-                transition:'all 0.2s'}}>
+                border: activeCategory === cat ? '2px solid #ff6b35' : '2px solid #ddd'}}>
               {cat}
             </button>
           ))}
         </div>
         <p className="text-muted mb-3">{filtered.length} items found</p>
-        {filtered.length === 0 ? (
-          <div className="text-center py-5">
-            <div style={{fontSize:'4rem'}}>😕</div>
-            <h4 className="mt-3">No food found</h4>
-            <p className="text-muted">Try a different search or category</p>
-          </div>
-        ) : (
-          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {filtered.map(food => (
-              <div className="col" key={food.id}><FoodCard food={food}/></div>
-            ))}
-          </div>
-        )}
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+          {filtered.map(food => (
+            <div className="col" key={food.id}><FoodCard food={food}/></div>
+          ))}
+        </div>
       </div>
     </>
   )
